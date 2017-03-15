@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <getopt.h>
+#include <stdbool.h>
 
 int main(int argc, char *argv[]) {
 
@@ -18,6 +19,7 @@ int main(int argc, char *argv[]) {
 	FILE* inputFile;
 	FILE* outputFile;
 	char sortMethod;
+	bool methodDefined = false;
 
 	while ((option = getopt_long(argc, argv, short_opt, long_opt, NULL)) != -1) {
 		switch(option) {
@@ -48,18 +50,30 @@ int main(int argc, char *argv[]) {
 				printf("Recibi archivo %s \n", optarg);
 				break;
 			case 'b':
-				sortMethod = option;
-				printf("%c \n", sortMethod);
+				if (methodDefined) {
+					printf("No puede ingresar los dos métodos a la vez, elija uno. \n");
+					return 0;
+				} else {
+					sortMethod = option;
+					methodDefined = true;
+				}
 				break;
 			case 'q':
-				sortMethod = option;
-				printf("%c \n", sortMethod);
+				if (methodDefined) {
+					printf("No puede ingresar los dos métodos a la vez, elija uno. \n");
+					return 0;
+				} else {
+					sortMethod = option;
+					methodDefined = true;
+				}
 				break;
 			default:
 			    printf ("Opción inválida. Para ver más información ingrese -h. \n");
 
 		}
 	}
+
+	printf("Hola \n");
 
 	return 0;
 }
