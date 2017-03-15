@@ -75,5 +75,11 @@ int main(int argc, char *argv[]) {
 
 	printf("Hola \n");
 
+	// TODO
+	// Se supone que si llegamos a este punto, lo que ingresó la persona es válido
+	// acá ya deberíamos ordenar de acuerdo al método ingresado
+	// Falta validar los archivos, que existan, que no este vacio
+	// Y alguna otra cosa que no recuerdo
+
 	return 0;
 }
