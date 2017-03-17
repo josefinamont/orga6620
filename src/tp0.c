@@ -3,6 +3,35 @@
 #include <getopt.h>
 #include <stdbool.h>
 
+// verifica que el archivo no esté vacío
+bool empty(FILE* file) {
+    long savedOffset = ftell(file);
+    fseek(file, 0, SEEK_END);
+
+    if (ftell(file) == 0) {
+        return true;
+    }
+
+    fseek(file, savedOffset, SEEK_SET);
+    return false;
+}
+
+// primero valida que exista
+// despues que no esté vacío
+bool validFile(FILE* file, char modo, char* argopt) {
+	if (file == NULL) {
+		printf("El archivo %s no existe, por favor ingrese un archivo existente \n", argopt);
+		return false;
+	}
+
+	if (empty(file) && modo != 'w') {
+		printf("El archivo %s está vacío, por favor ingrese un archivo no vacío \n", argopt);
+		return false;
+	}
+
+	printf("Recibi archivo %s \n", argopt);
+}
+
 int main(int argc, char *argv[]) {
 
 	int option = 0;
@@ -43,11 +72,15 @@ int main(int argc, char *argv[]) {
 				break;
 			case 'i':
 				inputFile = fopen(optarg, "r");
-				printf("Recibi archivo %s \n", optarg);
+				if (!validFile(inputFile, 'r', optarg)) {
+					return 0;
+				}
 				break;
 			case 'o':
 				outputFile = fopen(optarg, "w");
-				printf("Recibi archivo %s \n", optarg);
+				if (!validFile(outputFile, 'w', optarg)) {
+					return 0;
+				}
 				break;
 			case 'b':
 				if (methodDefined) {
