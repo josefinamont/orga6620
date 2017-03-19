@@ -29,7 +29,16 @@ bool validFile(FILE* file, char modo, char* argopt) {
 		return false;
 	}
 
-	printf("Recibi archivo %s \n", argopt);
+	printf("Se recibió el archivo %s \n", argopt);
+	return true;
+}
+
+void sortWordsOf(FILE* inputFile, FILE* outputFile, char sortMethod) {
+	if (sortMethod == 'q') {
+		printf("Tengo que ordenar con el método quicksort \n");
+	} else {
+		printf("Tengo que ordenar con el método bubblesort \n");
+	}
 }
 
 int main(int argc, char *argv[]) {
@@ -89,6 +98,7 @@ int main(int argc, char *argv[]) {
 				} else {
 					sortMethod = option;
 					methodDefined = true;
+					printf("Se definió bubblesort como método de ordenamiento \n");
 				}
 				break;
 			case 'q':
@@ -98,6 +108,7 @@ int main(int argc, char *argv[]) {
 				} else {
 					sortMethod = option;
 					methodDefined = true;
+					printf("Se definió quicksort como método de ordenamiento \n");
 				}
 				break;
 			default:
@@ -106,10 +117,7 @@ int main(int argc, char *argv[]) {
 		}
 	}
 
-	printf("Hola \n");
-
-	// TODO
-	// revisar que validaciones faltan, estan las basicas
+	sortWordsOf(inputFile, outputFile, sortMethod);
 
 	return 0;
 }
