@@ -3,6 +3,9 @@
 #include <getopt.h>
 #include <stdbool.h>
 
+#define QUICKSORT 'q'
+#define BUBBLESORT 'b'
+
 // verifica que el archivo no esté vacío
 bool empty(FILE* file) {
     long savedOffset = ftell(file);
@@ -34,9 +37,9 @@ bool validFile(FILE* file, char modo, char* argopt) {
 }
 
 void sortWordsOf(FILE* inputFile, FILE* outputFile, char sortMethod) {
-	if (sortMethod == 'q') {
+	if (sortMethod == QUICKSORT) {
 		printf("Tengo que ordenar con el método quicksort \n");
-	} else if (sortMethod == 'b') {
+	} else if (sortMethod == BUBBLESORT) {
 		printf("Tengo que ordenar con el método bubblesort \n");
 	}
 }
@@ -117,13 +120,15 @@ int main(int argc, char *argv[]) {
 				break;
 			default:
 			    printf ("Opción inválida. Para ver más información ingrese -h. \n");
-
 		}
 	}
 
-	sortWordsOf(inputFile, outputFile, sortMethod);
+	if (argc == 5 && sortMethod != QUICKSORT && sortMethod != BUBBLESORT) {
+		printf("Por defecto el método de ordenamiento es bubblesort \n");
+		sortMethod = BUBBLESORT;
+	}
 
-	// todo cuanod no se ingresan arg validar
+	sortWordsOf(inputFile, outputFile, sortMethod);
 
 	return 0;
 }
