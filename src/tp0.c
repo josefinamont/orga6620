@@ -36,7 +36,7 @@ bool validFile(FILE* file, char modo, char* argopt) {
 void sortWordsOf(FILE* inputFile, FILE* outputFile, char sortMethod) {
 	if (sortMethod == 'q') {
 		printf("Tengo que ordenar con el método quicksort \n");
-	} else {
+	} else if (sortMethod == 'b') {
 		printf("Tengo que ordenar con el método bubblesort \n");
 	}
 }
@@ -58,6 +58,10 @@ int main(int argc, char *argv[]) {
 	FILE* outputFile;
 	char sortMethod;
 	bool methodDefined = false;
+
+	if (argc == 1) {
+		printf("Debe ingresar algún argumento, para mas información ingrese -h \n");
+	}
 
 	while ((option = getopt_long(argc, argv, short_opt, long_opt, NULL)) != -1) {
 		switch(option) {
@@ -118,6 +122,8 @@ int main(int argc, char *argv[]) {
 	}
 
 	sortWordsOf(inputFile, outputFile, sortMethod);
+
+	// todo cuanod no se ingresan arg validar
 
 	return 0;
 }
