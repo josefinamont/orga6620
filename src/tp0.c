@@ -2,9 +2,15 @@
 #include <string.h>
 #include <getopt.h>
 #include <stdbool.h>
+#include <glib-2.0/glib.h>
 
 #define QUICKSORT 'q'
 #define BUBBLESORT 'b'
+#define LIMITE 200
+
+GCompareDataFunc func(char* word1, char* word2) {
+	return strcmp(word1, word2);
+}
 
 // verifica que el archivo no esté vacío
 bool empty(FILE* file) {
@@ -36,9 +42,34 @@ bool validFile(FILE* file, char modo, char* argopt) {
 	return true;
 }
 
+GList* parseFile(FILE* file) {
+	 GList* list = NULL;
+	 char linea [LIMITE];
+	 const char delimitadores[28] = " ,;.\n\"-()[]_:\ï\»?¿¡!&/#·*";
+	 memset(&linea, 0, LIMITE);
+	 while (fgets(linea, LIMITE, file) != NULL) {
+		 linea[strlen(linea)-2] = '.';
+		 linea[strlen(linea)-1] = '.';
+		 char* token = strtok(linea, delimitadores);
+		 while (token != NULL) {
+			 char* palabra;
+			 palabra = strdup(token);;
+			 if (g_list_find_custom(list,palabra, func) == NULL) {
+				 list = g_list_prepend(list, palabra);
+			 }
+			 token = strtok(NULL, delimitadores);
+		}
+		memset(&linea, 0, LIMITE);
+	 }
+	 return list;
+}
+
 void sortWordsOf(FILE* inputFile, FILE* outputFile, char sortMethod) {
+	//listWords contiene las palabras parseadas
+	GList* listWords = parseFile(inputFile);
 	if (sortMethod == QUICKSORT) {
 		printf("Tengo que ordenar con el método quicksort \n");
+
 	} else if (sortMethod == BUBBLESORT) {
 		printf("Tengo que ordenar con el método bubblesort \n");
 	}
