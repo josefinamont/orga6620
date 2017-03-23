@@ -121,6 +121,7 @@ int main(int argc, char *argv[]) {
 
 	if (argc == 1) {
 		printf("Debe ingresar algún argumento, para mas información ingrese -h \n");
+		return 0;
 	}
 
 	while ((option = getopt_long(argc, argv, short_opt, long_opt, NULL)) != -1) {
