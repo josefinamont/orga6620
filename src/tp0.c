@@ -3,17 +3,18 @@
 #include <getopt.h>
 #include <stdbool.h>
 #include <glib-2.0/glib.h>
+#include <stdlib.h>
 
 #define QUICKSORT 'q'
 #define BUBBLESORT 'b'
 #define LIMITE 200
 
-void quickSort(GList * unorderedList);
-void bubbleSort(GList * unorderedList);
+void quickSort(char** unorderedList, int words);
+void bubbleSort(char ** unorderedList, int words);
 int compareWords(char * firstWord, char * secondWord);
-void qs(GList * unorderedList,int leftLimit,int rightLimit);
+void qs(char ** unorderedList,int leftLimit,int rightLimit);
 
-void fillOutputFile(GList * result, FILE* output);
+void fillOutputFile(char ** result, FILE* output, int words);
 
 GCompareDataFunc func(char* word1, char* word2) {
 	return strcmp(word1, word2);
@@ -49,11 +50,12 @@ bool validFile(FILE* file, char modo, char* argopt) {
 	return true;
 }
 
-GList* parseFile(FILE* file) {
-	 GList* list = NULL;
+char ** parseFile(FILE* file, int words) {
 	 char linea [LIMITE];
 	 const char delimitadores[28] = " ,;.\n\"-()[]_:\ï\»?¿¡!&/#·*";
 	 memset(&linea, 0, LIMITE);
+	 char ** list = calloc(words, sizeof(char *));
+	 int index = 0;
 	 while (fgets(linea, LIMITE, file) != NULL) {
 		 linea[strlen(linea)-2] = '.';
 		 linea[strlen(linea)-1] = '.';
@@ -61,35 +63,53 @@ GList* parseFile(FILE* file) {
 		 while (token != NULL) {
 			 char* palabra;
 			 palabra = strdup(token);;
-			 if (g_list_find_custom(list,palabra, func) == NULL) {
-				 list = g_list_prepend(list, palabra);
-			 }
-			 token = strtok(NULL, delimitadores);
+			//  if (g_list_find_custom(list,palabra, func) == NULL) {
+			// 	 list = g_list_prepend(list, palabra);
+			//  }
+			list[index] = palabra;
+			index++;
+		 	token = strtok(NULL, delimitadores);
 		}
 		memset(&linea, 0, LIMITE);
 	 }
+	//  for(int i = 0; i < words; i++){
+	// 	 printf("%s\n", list[i]);
+	// 	 printf("%d\n", i);
+	//  }
      fclose(file);
 	 return list;
 }
 
 void sortWordsOf(FILE* inputFile, FILE* outputFile, char sortMethod) {
 	//listWords contiene las palabras parseadas
-	GList* listWords = parseFile(inputFile);
+	// int words = 422386; quijote
+	int words = 30931;
+	// FILE * prueba = popen("wc -w alice.txt | sed  's/\([0-9]*\).*/\1/'", "r");
+	// printf("%s\n", "aca llega");
+	//
+	// fread(words, 1000, prueba);
+	// printf("words %d\n", words);
+	// printf("%s\n", system("wc -w alice.txt"));
+	char** listWords = parseFile(inputFile, words);
+	printf("%s\n", listWords[1]);
 	if (sortMethod == QUICKSORT) {
 		printf("Tengo que ordenar con el método quicksort \n");
-    	quickSort(listWords);
+    	quickSort(listWords, words);
 	} else if (sortMethod == BUBBLESORT) {
 		printf("Tengo que ordenar con el método bubblesort \n");
-    	bubbleSort(listWords);
+    	bubbleSort(listWords, words);
 	}
-	fillOutputFile(listWords, outputFile);
+	fillOutputFile(listWords, outputFile, words);
+	for(int i = 0; i < words; i++){
+		free(listWords[i]);
+	}
+	free(listWords);
 }
 
-void fillOutputFile(GList * result, FILE* output){
-	GList * iterator = NULL;
-	for(iterator = result; iterator; iterator = iterator->next){
+void fillOutputFile(char ** result, FILE* output, int words){
+	for(int i = 0; i < words; i++){
 		//TODO completar casos de error
-		fputs((char *) iterator->data, output);
+		fputs(result[i], output);
 		fputs("\n", output);
 	};
 	fclose(output);
@@ -192,59 +212,44 @@ int main(int argc, char *argv[]) {
 }
 
 
-void bubbleSort(GList *unorderedList) {
-    GList * actual = NULL;
-    GList * next = NULL;
-    gpointer * temporal = NULL;
-    int size = g_list_length (unorderedList);
-    for(int i = 0; i < size -1 ; i++){
-        actual = g_list_first(unorderedList);
-        for(int j = 0; j < size - i - 1; j++){
-            next = g_list_next(actual);
-            if(compareWords((char *)actual->data, (char *)next->data) == 1) {
-                temporal = actual->data;
-                actual->data = next->data;
-                next->data = temporal;
+void bubbleSort(char **unorderedList, int words) {
+    char * actual = NULL;
+    char * next = NULL;
+    char * temporal = NULL;
+    for(int i = 0; i < words -1 ; i++){
+        for(int j = 0; j < words - i - 1; j++){
+            if(compareWords(unorderedList[j], unorderedList[j+1]) == 1) {
+                temporal = unorderedList[j];
+                unorderedList[j] = unorderedList[j+1];
+                unorderedList[j+1] = temporal;
             }
-            actual = g_list_next(actual);
         }
     }
 }
 
-void quickSort(GList * unorderedList){
-   qs(unorderedList, 0, g_list_length (unorderedList) - 1);
+void quickSort(char ** unorderedList, int words){
+   qs(unorderedList, 0, words - 1);
 }
 
-void qs(GList * unorderedList,int leftLimit,int rightLimit){
+void qs(char ** unorderedList, int leftLimit,int rightLimit){
    int left,right;
-   gpointer * pivot;
-   gpointer * temporal = NULL;
-   GList * pivotValue = NULL;
-   GList * actual = NULL;
+   char * pivot;
+   char * temporal = NULL;
    left = leftLimit;
    right = rightLimit;
-   pivot = g_list_nth(unorderedList, (left+right)/2)->data;
-
-	GList * leftValue = NULL;
-	GList * rightValue = NULL;
-
+   pivot = unorderedList[(left+right)/2];
 
    do{
-	   leftValue = g_list_nth(unorderedList, left);
-	   rightValue = g_list_nth(unorderedList, right);
-
-       while(compareWords((char *)leftValue->data, (char *)pivot) == -1 && left < rightLimit){
-		  left++;
-		  leftValue = leftValue->next;
+     	while(compareWords(unorderedList[left], pivot) == -1 && left < rightLimit){
+		  	left++;
 	   }
-       while(compareWords((char *)pivot, (char *)rightValue->data) == -1 && right > leftLimit){
-		   right--;
-		   rightValue = rightValue->prev;
+     while(compareWords(pivot, unorderedList[right]) == -1 && right > leftLimit){
+		   	right--;
 	   }
        if(left <= right){
-           temporal = leftValue->data;
-           leftValue->data = rightValue->data;
-           rightValue->data = temporal;
+           temporal = unorderedList[left];
+           unorderedList[left] = unorderedList[right];
+           unorderedList[right] = temporal;
            left++;
            right--;
        }
