@@ -2,7 +2,6 @@
 #include <string.h>
 #include <getopt.h>
 #include <stdbool.h>
-#include <glib-2.0/glib.h>
 #include <stdlib.h>
 
 #define QUICKSORT 'q'
@@ -16,9 +15,9 @@ void qs(char ** unorderedList,int leftLimit,int rightLimit);
 
 void fillOutputFile(char ** result, FILE* output, int words);
 
-GCompareDataFunc func(char* word1, char* word2) {
+/*GCompareDataFunc func(char* word1, char* word2) {
 	return strcmp(word1, word2);
-}
+}*/
 
 // verifica que el archivo no esté vacío
 bool empty(FILE* file) {
@@ -51,8 +50,9 @@ bool validFile(FILE* file, char modo, char* argopt) {
 }
 
 char ** parseFile(FILE* file, int words) {
+	 rewind(file);
 	 char linea [LIMITE];
-	 const char delimitadores[28] = " ,;.\n\"-()[]_:\ï\»?¿¡!&/#·*";
+	 const char delimitadores[28] = " ,;.\n\"-()[]_:?¿¡!&/#·*";
 	 memset(&linea, 0, LIMITE);
 	 char ** list = calloc(words, sizeof(char *));
 	 int index = 0;
@@ -63,44 +63,52 @@ char ** parseFile(FILE* file, int words) {
 		 while (token != NULL) {
 			 char* palabra;
 			 palabra = strdup(token);;
-			//  if (g_list_find_custom(list,palabra, func) == NULL) {
-			// 	 list = g_list_prepend(list, palabra);
-			//  }
-			list[index] = palabra;
-			index++;
-		 	token = strtok(NULL, delimitadores);
+			 list[index] = palabra;
+			 index++;
+			 token = strtok(NULL, delimitadores);
 		}
 		memset(&linea, 0, LIMITE);
 	 }
-	//  for(int i = 0; i < words; i++){
-	// 	 printf("%s\n", list[i]);
-	// 	 printf("%d\n", i);
-	//  }
+	 /*for(int i = 0; i < words; i++){
+	 	 printf("%s\n", list[i]);
+		 printf("%d\n", i);
+	  }*/
      fclose(file);
 	 return list;
 }
 
+int calcularTamanio(FILE* file) {
+	char linea [LIMITE];
+	const char delimitadores[28] = " ,;.\n\"-()[]_:?¿¡!&/#·*";
+	int contador = 0;
+
+	while (fgets(linea, LIMITE, file) != NULL) {
+		 linea[strlen(linea)-2] = '.';
+		 linea[strlen(linea)-1] = '.';
+		 char* token = strtok(linea, delimitadores);
+		 while (token != NULL) {
+			 contador ++;
+			 token = strtok(NULL, delimitadores);
+		 }
+	}
+	contador--;
+	printf("tamanio %d\n",contador);
+	return contador;
+}
+
 void sortWordsOf(FILE* inputFile, FILE* outputFile, char sortMethod) {
-	//listWords contiene las palabras parseadas
-	// int words = 422386; quijote
-	int words = 30931;
-	// FILE * prueba = popen("wc -w alice.txt | sed  's/\([0-9]*\).*/\1/'", "r");
-	// printf("%s\n", "aca llega");
-	//
-	// fread(words, 1000, prueba);
-	// printf("words %d\n", words);
-	// printf("%s\n", system("wc -w alice.txt"));
-	char** listWords = parseFile(inputFile, words);
-	printf("%s\n", listWords[1]);
+
+	int tamanio = calcularTamanio(inputFile);
+	char** listWords = parseFile(inputFile, tamanio);
 	if (sortMethod == QUICKSORT) {
 		printf("Tengo que ordenar con el método quicksort \n");
-    	quickSort(listWords, words);
+    	quickSort(listWords, tamanio);
 	} else if (sortMethod == BUBBLESORT) {
 		printf("Tengo que ordenar con el método bubblesort \n");
-    	bubbleSort(listWords, words);
+    	bubbleSort(listWords, tamanio);
 	}
-	fillOutputFile(listWords, outputFile, words);
-	for(int i = 0; i < words; i++){
+	fillOutputFile(listWords, outputFile, tamanio);
+	for(int i = 0; i < tamanio; i++){
 		free(listWords[i]);
 	}
 	free(listWords);
@@ -114,9 +122,6 @@ void fillOutputFile(char ** result, FILE* output, int words){
 	};
 	fclose(output);
 }
-
-
-
 
 
 //gcc $(pkg-config --cflags --libs glib-2.0) -o ejemplo prueba.c -lglib-2.0
@@ -207,7 +212,6 @@ int main(int argc, char *argv[]) {
 	}
 
 	sortWordsOf(inputFile, outputFile, sortMethod);
-
 	return 0;
 }
 
