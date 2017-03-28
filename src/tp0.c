@@ -111,7 +111,7 @@ void sortWordsOf(FILE* inputFile, FILE* outputFile, char sortMethod) {
 		printf("Tengo que ordenar con el método bubblesort \n");
     	bubbleSort(listWords.array, listWords.size);
 	}
-//	fillOutputFile(listWords, outputFile, words);
+	fillOutputFile(listWords.array, outputFile, listWords.size);
 //	for(int i = 0; i < words; i++){
 //		free(listWords[i]);
 //	}
