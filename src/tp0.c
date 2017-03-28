@@ -52,7 +52,8 @@ bool validFile(FILE* file, char modo, char* argopt) {
 GList* parseFile(FILE* file) {
 	 GList* list = NULL;
 	 char linea [LIMITE];
-	 const char delimitadores[28] = " ,;.\n\"-()[]_:\ï\»?¿¡!&/#·*";
+	 int contador = 0;
+	 const char delimitadores[28] = " ,;.\n\"-()[]_:\'?¿¡!&/#·*";
 	 memset(&linea, 0, LIMITE);
 	 while (fgets(linea, LIMITE, file) != NULL) {
 		 linea[strlen(linea)-2] = '.';
@@ -61,13 +62,15 @@ GList* parseFile(FILE* file) {
 		 while (token != NULL) {
 			 char* palabra;
 			 palabra = strdup(token);;
-			 if (g_list_find_custom(list,palabra, func) == NULL) {
+			 //if (g_list_find_custom(list,palabra, func) == NULL) {
 				 list = g_list_prepend(list, palabra);
-			 }
+				 contador++;
+			 //}
 			 token = strtok(NULL, delimitadores);
 		}
 		memset(&linea, 0, LIMITE);
 	 }
+	 printf("tamanio de la lista %d",contador);
      fclose(file);
 	 return list;
 }
@@ -77,10 +80,21 @@ void sortWordsOf(FILE* inputFile, FILE* outputFile, char sortMethod) {
 	GList* listWords = parseFile(inputFile);
 	if (sortMethod == QUICKSORT) {
 		printf("Tengo que ordenar con el método quicksort \n");
-    	quickSort(listWords);
+		clock_t inicio,fin;
+		inicio = clock();
+		quickSort(listWords);
+		fin = clock();
+		// obtenemos y escribimos el tiempo en segundos
+		printf("Tiempo empleado: %f\n",(fin - inicio)/(double) CLOCKS_PER_SEC);
+
 	} else if (sortMethod == BUBBLESORT) {
 		printf("Tengo que ordenar con el método bubblesort \n");
-    	bubbleSort(listWords);
+    	clock_t inicio,fin;
+		inicio = clock();
+		bubbleSort(listWords);
+		fin = clock();
+		// obtenemos y escribimos el tiempo en segundos
+		printf("Tiempo empleado: %f\n",(fin - inicio)/(double) CLOCKS_PER_SEC);
 	}
 	fillOutputFile(listWords, outputFile);
 }
