@@ -83,7 +83,11 @@ Array parseFile(FILE* file) {
 }
 
 void sortWordsOf(FILE* inputFile, FILE* outputFile, char sortMethod) {
+	clock_t ini,final;
+	ini = clock();
 	Array listWords = parseFile(inputFile);
+	final = clock();
+	printf("Tiempo empleado para el parseo: %f\n",(final - ini)/(double) CLOCKS_PER_SEC);
 	if (sortMethod == QUICKSORT) {
 		printf("Tengo que ordenar con el método quicksort \n");
 		clock_t inicio,fin;
@@ -109,7 +113,6 @@ void sortWordsOf(FILE* inputFile, FILE* outputFile, char sortMethod) {
 }
 
 void fillOutputFile(Array result, FILE* output, int words){
-	printf("%d", words);
 	for(int i = 0; i < words; i++){
 		//TODO completar casos de error
 		fputs(result.array[i], output);
