@@ -4,8 +4,8 @@
 #include <stdbool.h>
 //#include <glib-2.0/glib.h>
 #include <stdlib.h>
-
 #include "array.h"
+#include <time.h>
 
 #define QUICKSORT 'q'
 #define BUBBLESORT 'b'
@@ -16,13 +16,9 @@ void bubbleSort(char ** unorderedList, int words);
 int compareWords(char * firstWord, char * secondWord);
 void qs(char ** unorderedList,int leftLimit,int rightLimit);
 
-void fillOutputFile(char ** result, FILE* output, int words);
+void fillOutputFile(Array result, FILE* output, int words);
 
-Array parseFile(FILE* file, int words);
-
-//GCompareDataFunc func(char* word1, char* word2) {
-//	return strcmp(word1, word2);
-//}
+Array parseFile(FILE* file);
 
 // verifica que el archivo no esté vacío
 bool empty(FILE* file) {
@@ -54,11 +50,10 @@ bool validFile(FILE* file, char modo, char* argopt) {
 	return true;
 }
 
-Array parseFile(FILE* file, int words) {
+Array parseFile(FILE* file) {
 	 char linea [LIMITE];
-	 const char delimitadores[28] = " ,;.\n\"-()[]_:\ï\»?¿¡!&/#·*";
+	 const char delimitadores[28] = " ,;.\n\"-()[]_:?¿¡!&/#·*";
 	 memset(&linea, 0, LIMITE);
-//	 char ** list = calloc(words, sizeof(char *));
 	Array a;
     initArray(&a, 0);
 	 while (fgets(linea, LIMITE, file) != NULL) {
@@ -68,9 +63,6 @@ Array parseFile(FILE* file, int words) {
 		 while (token != NULL) {
 			 char* palabra;
 			 palabra = strdup(token);;
-			//  if (g_list_find_custom(list,palabra, func) == NULL) {
-			// 	 list = g_list_prepend(list, palabra);
-			//  }
              bool repeatedWord = false;
              for(int i = 0; i < a.size; i++){
                 if(compareWords(palabra, a.array[i]) == 0){
@@ -85,44 +77,42 @@ Array parseFile(FILE* file, int words) {
 		}
 		memset(&linea, 0, LIMITE);
 	 }
-	//  for(int i = 0; i < words; i++){
-	// 	 printf("%s\n", list[i]);
-	// 	 printf("%d\n", i);
-	//  }
      fclose(file);
+     printf("%d \n", a.size);
 	 return a;
 }
 
 void sortWordsOf(FILE* inputFile, FILE* outputFile, char sortMethod) {
-	//listWords contiene las palabras parseadas
-	// int words = 422386; quijote
-	int words = 30931;
-	// FILE * prueba = popen("wc -w alice.txt | sed  's/\([0-9]*\).*/\1/'", "r");
-	// printf("%s\n", "aca llega");
-	//
-	// fread(words, 1000, prueba);
-	// printf("words %d\n", words);
-	// printf("%s\n", system("wc -w alice.txt"));
-	Array listWords = parseFile(inputFile, words);
+	Array listWords = parseFile(inputFile);
 	if (sortMethod == QUICKSORT) {
 		printf("Tengo que ordenar con el método quicksort \n");
-    	quickSort(listWords.array, listWords.size);
+		clock_t inicio,fin;
+		inicio = clock();
+		quickSort(listWords.array, listWords.size);
+		fin = clock();
+		// obtenemos y escribimos el tiempo en segundos
+		printf("Tiempo empleado: %f\n",(fin - inicio)/(double) CLOCKS_PER_SEC);
+
 	} else if (sortMethod == BUBBLESORT) {
 		printf("Tengo que ordenar con el método bubblesort \n");
-    	bubbleSort(listWords.array, listWords.size);
+		clock_t inicio,fin;
+		inicio = clock();
+		bubbleSort(listWords.array, listWords.size);
+		fin = clock();
+		// obtenemos y escribimos el tiempo en segundos
+		printf("Tiempo empleado: %f\n",(fin - inicio)/(double) CLOCKS_PER_SEC);
+
 	}
-	fillOutputFile(listWords.array, outputFile, listWords.size);
-//	for(int i = 0; i < words; i++){
-//		free(listWords[i]);
-//	}
-//	free(listWords);
+
+	fillOutputFile(listWords, outputFile, listWords.size);
     freeArray(&listWords);
 }
 
-void fillOutputFile(char ** result, FILE* output, int words){
+void fillOutputFile(Array result, FILE* output, int words){
+	printf("%d", words);
 	for(int i = 0; i < words; i++){
 		//TODO completar casos de error
-		fputs(result[i], output);
+		fputs(result.array[i], output);
 		fputs("\n", output);
 	};
 	fclose(output);
