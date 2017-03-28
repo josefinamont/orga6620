@@ -2,8 +2,10 @@
 #include <string.h>
 #include <getopt.h>
 #include <stdbool.h>
-#include <glib-2.0/glib.h>
+//#include <glib-2.0/glib.h>
 #include <stdlib.h>
+
+#include "array.h"
 
 #define QUICKSORT 'q'
 #define BUBBLESORT 'b'
@@ -16,9 +18,11 @@ void qs(char ** unorderedList,int leftLimit,int rightLimit);
 
 void fillOutputFile(char ** result, FILE* output, int words);
 
-GCompareDataFunc func(char* word1, char* word2) {
-	return strcmp(word1, word2);
-}
+Array parseFile(FILE* file, int words);
+
+//GCompareDataFunc func(char* word1, char* word2) {
+//	return strcmp(word1, word2);
+//}
 
 // verifica que el archivo no esté vacío
 bool empty(FILE* file) {
@@ -50,12 +54,13 @@ bool validFile(FILE* file, char modo, char* argopt) {
 	return true;
 }
 
-char ** parseFile(FILE* file, int words) {
+Array parseFile(FILE* file, int words) {
 	 char linea [LIMITE];
 	 const char delimitadores[28] = " ,;.\n\"-()[]_:\ï\»?¿¡!&/#·*";
 	 memset(&linea, 0, LIMITE);
-	 char ** list = calloc(words, sizeof(char *));
-	 int index = 0;
+//	 char ** list = calloc(words, sizeof(char *));
+	Array a;
+    initArray(&a, 0);
 	 while (fgets(linea, LIMITE, file) != NULL) {
 		 linea[strlen(linea)-2] = '.';
 		 linea[strlen(linea)-1] = '.';
@@ -66,8 +71,16 @@ char ** parseFile(FILE* file, int words) {
 			//  if (g_list_find_custom(list,palabra, func) == NULL) {
 			// 	 list = g_list_prepend(list, palabra);
 			//  }
-			list[index] = palabra;
-			index++;
+             bool repeatedWord = false;
+             for(int i = 0; i < a.size; i++){
+                if(compareWords(palabra, a.array[i]) == 0){
+                    repeatedWord = true;
+                    break;
+                }
+             }
+             if(!repeatedWord){
+                 insertArray(&a, palabra);
+             }
 		 	token = strtok(NULL, delimitadores);
 		}
 		memset(&linea, 0, LIMITE);
@@ -77,7 +90,7 @@ char ** parseFile(FILE* file, int words) {
 	// 	 printf("%d\n", i);
 	//  }
      fclose(file);
-	 return list;
+	 return a;
 }
 
 void sortWordsOf(FILE* inputFile, FILE* outputFile, char sortMethod) {
@@ -90,20 +103,20 @@ void sortWordsOf(FILE* inputFile, FILE* outputFile, char sortMethod) {
 	// fread(words, 1000, prueba);
 	// printf("words %d\n", words);
 	// printf("%s\n", system("wc -w alice.txt"));
-	char** listWords = parseFile(inputFile, words);
-	printf("%s\n", listWords[1]);
+	Array listWords = parseFile(inputFile, words);
 	if (sortMethod == QUICKSORT) {
 		printf("Tengo que ordenar con el método quicksort \n");
-    	quickSort(listWords, words);
+    	quickSort(listWords.array, listWords.size);
 	} else if (sortMethod == BUBBLESORT) {
 		printf("Tengo que ordenar con el método bubblesort \n");
-    	bubbleSort(listWords, words);
+    	bubbleSort(listWords.array, listWords.size);
 	}
-	fillOutputFile(listWords, outputFile, words);
-	for(int i = 0; i < words; i++){
-		free(listWords[i]);
-	}
-	free(listWords);
+//	fillOutputFile(listWords, outputFile, words);
+//	for(int i = 0; i < words; i++){
+//		free(listWords[i]);
+//	}
+//	free(listWords);
+    freeArray(&listWords);
 }
 
 void fillOutputFile(char ** result, FILE* output, int words){
