@@ -3,6 +3,8 @@
 #include <getopt.h>
 #include <stdbool.h>
 #include <stdlib.h>
+#include <ctype.h>
+#include <time.h>
 
 #define QUICKSORT 'q'
 #define BUBBLESORT 'b'
@@ -52,7 +54,7 @@ bool validFile(FILE* file, char modo, char* argopt) {
 char ** parseFile(FILE* file, int words) {
 	 rewind(file);
 	 char linea [LIMITE];
-	 const char delimitadores[28] = " ,;.\n\"-()[]_:?¿¡!&/#·*";
+	 const char delimitadores[30] = " ,;.\n\"\'-()[]_:?¿¡!&/#·*";
 	 memset(&linea, 0, LIMITE);
 	 char ** list = calloc(words, sizeof(char *));
 	 int index = 0;
@@ -62,9 +64,12 @@ char ** parseFile(FILE* file, int words) {
 		 char* token = strtok(linea, delimitadores);
 		 while (token != NULL) {
 			 char* palabra;
+			 //if (strcmp(token,"s") && (strcmp(token,"re"))) {
 			 palabra = strdup(token);;
+			 //palabra[0]= tolower(palabra[0]);
 			 list[index] = palabra;
 			 index++;
+			 //}
 			 token = strtok(NULL, delimitadores);
 		}
 		memset(&linea, 0, LIMITE);
@@ -74,12 +79,14 @@ char ** parseFile(FILE* file, int words) {
 		 printf("%d\n", i);
 	  }*/
      fclose(file);
-	 return list;
+	 //(*maxLog) = index;
+	 //printf("maximoLogico: %d", index);
+     return list;
 }
 
 int calcularTamanio(FILE* file) {
 	char linea [LIMITE];
-	const char delimitadores[28] = " ,;.\n\"-()[]_:?¿¡!&/#·*";
+	const char delimitadores[30] = " ,;.\n\"\'-()[]_:?¿¡!&/#·*";
 	int contador = 0;
 
 	while (fgets(linea, LIMITE, file) != NULL) {
@@ -98,14 +105,26 @@ int calcularTamanio(FILE* file) {
 
 void sortWordsOf(FILE* inputFile, FILE* outputFile, char sortMethod) {
 
+	//int maxLogico;
 	int tamanio = calcularTamanio(inputFile);
-	char** listWords = parseFile(inputFile, tamanio);
+	char** listWords = parseFile(inputFile, tamanio);//, &maxLogico);
 	if (sortMethod == QUICKSORT) {
 		printf("Tengo que ordenar con el método quicksort \n");
-    	quickSort(listWords, tamanio);
+		clock_t inicio,fin;
+		inicio = clock();
+		quickSort(listWords, tamanio);
+		fin = clock();
+		// obtenemos y escribimos el tiempo en segundos
+		printf("Tiempo empleado: %f\n",(fin - inicio)/(double) CLOCKS_PER_SEC);
+
 	} else if (sortMethod == BUBBLESORT) {
 		printf("Tengo que ordenar con el método bubblesort \n");
-    	bubbleSort(listWords, tamanio);
+    	clock_t inicio,fin;
+		inicio = clock();
+		bubbleSort(listWords, tamanio);
+		fin = clock();
+		// obtenemos y escribimos el tiempo en segundos
+		printf("Tiempo empleado: %f\n",(fin - inicio)/(double) CLOCKS_PER_SEC);
 	}
 	fillOutputFile(listWords, outputFile, tamanio);
 	for(int i = 0; i < tamanio; i++){
