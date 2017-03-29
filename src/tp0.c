@@ -17,6 +17,7 @@ int compareWords(char * firstWord, char * secondWord);
 void qs(char ** unorderedList,int leftLimit,int rightLimit);
 
 void fillOutputFile(char ** result, FILE* output, int words);
+void switchWords(char ** firstWord, char ** secondWord);
 
 Array parseFile(FILE* file, int words);
 
@@ -228,13 +229,10 @@ int main(int argc, char *argv[]) {
 void bubbleSort(char **unorderedList, int words) {
     char * actual = NULL;
     char * next = NULL;
-    char * temporal = NULL;
     for(int i = 0; i < words -1 ; i++){
         for(int j = 0; j < words - i - 1; j++){
             if(compareWords(unorderedList[j], unorderedList[j+1]) == 1) {
-                temporal = unorderedList[j];
-                unorderedList[j] = unorderedList[j+1];
-                unorderedList[j+1] = temporal;
+								switchWords(&unorderedList[j], &unorderedList[j+1]);
             }
         }
     }
@@ -247,7 +245,7 @@ void quickSort(char ** unorderedList, int words){
 void qs(char ** unorderedList, int leftLimit,int rightLimit){
    int left,right;
    char * pivot;
-   char * temporal = NULL;
+	 char * temporal;
    left = leftLimit;
    right = rightLimit;
    pivot = unorderedList[(left+right)/2];
@@ -260,11 +258,9 @@ void qs(char ** unorderedList, int leftLimit,int rightLimit){
 		   	right--;
 	   }
        if(left <= right){
-           temporal = unorderedList[left];
-           unorderedList[left] = unorderedList[right];
-           unorderedList[right] = temporal;
-           left++;
-           right--;
+				 switchWords(&unorderedList[left], &unorderedList[right]);
+         left++;
+         right--;
        }
    } while(left<=right);
    if(leftLimit<right){qs(unorderedList,leftLimit,right);}
@@ -292,4 +288,10 @@ int compareWords(char * firstWord, char * secondWord){
         }
 
     }
+}
+
+void switchWords(char ** firstWord, char ** secondWord){
+	char * temporal = *firstWord;
+	*firstWord = *secondWord;
+	*secondWord = temporal;
 }
