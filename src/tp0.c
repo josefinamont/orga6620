@@ -20,7 +20,7 @@ void switchWords(char ** firstWord, char ** secondWord);
 
 Array parseFile(FILE* file);
 
-// verifica que el archivo no esté vacío
+/* verifica que el archivo no esté vacío */
 bool empty(FILE* file) {
     long savedOffset = ftell(file);
     fseek(file, 0, SEEK_END);
@@ -33,8 +33,8 @@ bool empty(FILE* file) {
     return false;
 }
 
-// primero valida que exista
-// despues que no esté vacío
+/* primero valida que exista
+ despues que no esté vacío */
 bool validFile(FILE* file, char modo, char* argopt) {
 	if (file == NULL) {
 		printf("El archivo %s no existe, por favor ingrese un archivo existente \n", argopt);
@@ -64,7 +64,8 @@ Array parseFile(FILE* file) {
 			 char* palabra;
 			 palabra = strdup(token);;
              bool repeatedWord = false;
-             for(int i = 0; i < a.size; i++){
+             int i;
+             for(i = 0; i < a.size; i++){
                 if(compareWords(palabra, a.array[i]) == 0){
                     repeatedWord = true;
                     break;
@@ -94,7 +95,7 @@ void sortWordsOf(FILE* inputFile, FILE* outputFile, char sortMethod) {
 		inicio = clock();
 		quickSort(listWords.array, listWords.size);
 		fin = clock();
-		// obtenemos y escribimos el tiempo en segundos
+		/* obtenemos y escribimos el tiempo en segundos */
 		printf("Tiempo empleado: %f\n",(fin - inicio)/(double) CLOCKS_PER_SEC);
 
 	} else if (sortMethod == BUBBLESORT) {
@@ -103,7 +104,7 @@ void sortWordsOf(FILE* inputFile, FILE* outputFile, char sortMethod) {
 		inicio = clock();
 		bubbleSort(listWords.array, listWords.size);
 		fin = clock();
-		// obtenemos y escribimos el tiempo en segundos
+		/* obtenemos y escribimos el tiempo en segundos */
 		printf("Tiempo empleado: %f\n",(fin - inicio)/(double) CLOCKS_PER_SEC);
 
 	}
@@ -114,18 +115,11 @@ void sortWordsOf(FILE* inputFile, FILE* outputFile, char sortMethod) {
 
 void fillOutputFile(Array result, FILE* output, int words){
 	for(int i = 0; i < words; i++){
-		//TODO completar casos de error
 		fputs(result.array[i], output);
 		fputs("\n", output);
 	};
 	fclose(output);
 }
-
-
-
-
-
-//gcc $(pkg-config --cflags --libs glib-2.0) -o ejemplo prueba.c -lglib-2.0
 
 int main(int argc, char *argv[]) {
 
@@ -260,9 +254,10 @@ void qs(char ** unorderedList, int leftLimit,int rightLimit){
    if(rightLimit>left){qs(unorderedList,left,rightLimit);}
 }
 
-//Devuelve 1 si firstWord > secondWord, -1 si firstWord < secondWord, 0 si son iguales
+/*Devuelve 1 si firstWord > secondWord, -1 si firstWord < secondWord, 0 si son iguales*/
 int compareWords(char * firstWord, char * secondWord){
-    for(int i = 0; firstWord[i]; i++){
+    int i;
+    for(i = 0; firstWord[i]; i++){
         if(firstWord[i] == secondWord[i]){
             if(secondWord[i+1] && !firstWord[i+1]){
                 return -1;

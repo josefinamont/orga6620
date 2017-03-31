@@ -1,7 +1,3 @@
-//
-// Created by leonardo on 28/03/17.
-//
-
 #ifndef SRC_ARRAY_H
 #define SRC_ARRAY_H
 
@@ -18,8 +14,6 @@ void initArray(Array * a, size_t initialSize) {
 }
 
 void insertArray(Array *a, char * element) {
-    // a->used is the number of used entries, because a->array[a->used++] updates a->used only *after* the array has been accessed.
-    // Therefore a->used can go up to a->size
     if (a->used == a->size) {
         a->size++;
         a->array = (char **)realloc(a->array, a->size * sizeof(char *));
@@ -32,5 +26,3 @@ void freeArray(Array *a) {
     a->array = NULL;
     a->used = a->size = 0;
 }
-
-#endif //SRC_ARRAY_H
