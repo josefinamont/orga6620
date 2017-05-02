@@ -14,11 +14,10 @@ void quickSort(char** unorderedList, int words);
 void bubbleSort(char ** unorderedList, int words);
 int compareWords(char * firstWord, char * secondWord);
 void qs(char ** unorderedList,int leftLimit,int rightLimit);
-
 void fillOutputFile(Array result, FILE* output, int words);
 void switchWords(char ** firstWord, char ** secondWord);
-
 Array parseFile(FILE* file);
+
 
 /* verifica que el archivo no esté vacío */
 bool empty(FILE* file) {
@@ -106,7 +105,6 @@ void sortWordsOf(FILE* inputFile, FILE* outputFile, char sortMethod) {
 		fin = clock();
 		/* obtenemos y escribimos el tiempo en segundos */
 		printf("Tiempo empleado: %f\n",(fin - inicio)/(double) CLOCKS_PER_SEC);
-
 	}
 
 	fillOutputFile(listWords, outputFile, listWords.size);
@@ -183,7 +181,6 @@ int main(int argc, char *argv[]) {
 				} else {
 					sortMethod = option;
 					methodDefined = true;
-					printf("Se definió bubblesort como método de ordenamiento \n");
 				}
 				break;
 			case 'q':
@@ -193,7 +190,6 @@ int main(int argc, char *argv[]) {
 				} else {
 					sortMethod = option;
 					methodDefined = true;
-					printf("Se definió quicksort como método de ordenamiento \n");
 				}
 				break;
 			default:
@@ -257,29 +253,28 @@ void qs(char ** unorderedList, int leftLimit,int rightLimit){
 /*Devuelve 1 si firstWord > secondWord, -1 si firstWord < secondWord, 0 si son iguales*/
 int compareWords(char * firstWord, char * secondWord){
     int i;
-    for(i = 0; firstWord[i]; i++){
-        if(firstWord[i] == secondWord[i]){
-            if(secondWord[i+1] && !firstWord[i+1]){
+    for (i = 0; firstWord[i]; i++) {
+        if(firstWord[i] == secondWord[i]) {
+            if(secondWord[i+1] && !firstWord[i+1]) {
                 return -1;
             }
-            if(!firstWord[i+1] && !secondWord[i+1]){
+            if(!firstWord[i+1] && !secondWord[i+1]) {
                 return 0;
             }
-            if(!secondWord[i]){
+            if(!secondWord[i]) {
                 return 1;
             }
         }
         if(firstWord[i] > secondWord[i]) {
             return 1;
-        } else if (firstWord[i] < secondWord[i]){
+        } else if (firstWord[i] < secondWord[i]) {
             return -1;
         }
-
     }
 }
 
 void switchWords(char ** firstWord, char ** secondWord){
-		char * temporal = *firstWord;
-		*firstWord = *secondWord;
-		*secondWord = temporal;
+	char * temporal = *firstWord;
+	*firstWord = *secondWord;
+	*secondWord = temporal;
 }
